@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+    =====================================================================
+      LONG GRASS TRADING LLC — Nondurable Goods Wholesale
+      Final integrated version (with 5-item menu and responsive hamburger)
+
+      Compliance / constraints
+      - Apple Developer org style: no phone numbers or phone inputs anywhere
+      - Corporate email only for contact: oneil@longgrasstrading.org
+      - Clear business identity + physical address in footer
+      - Success toast on form submit (no external libs)
+
+      Company facts
+      - Company: LONG GRASS TRADING LLC
+      - Address: 3731 SW Darby Ln, Port Saint Lucie, FL 34953, USA
+      - Email: oneil@longgrasstrading.org
+      - Sector: Miscellaneous Nondurable Goods Merchant Wholesalers
+    =====================================================================
+  -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LONG GRASS TRADING LLC — Nondurable Goods Wholesale</title>
+  <meta name="description" content="LONG GRASS TRADING LLC supplies nondurable goods to distributors and retail groups. We move fast, document clearly, and keep inventory visible so shelves stay full." />
+
+  <!-- Typefaces -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet"/>
+
+  <style>
+    /* =========================================================
+       0) Tokens / Colors / Dimensions
+       ========================================================= */
+    :root{
+      --bg:#0b0d0f; --ink:#f2f5f8; --muted:#c7ccd3; --line:#262b31; --panel:#111418;
+      --brand:#4ad16f; --brand-600:#2fa957; --accent:#a8f0bf;
+      --shadow-1:0 18px 42px rgba(0,0,0,.42); --shadow-2:0 10px 24px rgba(0,0,0,.34);
+      --radius-xxl:32px; --radius-xl:24px; --radius-lg:18px; --radius-md:12px;
+      --wrap:clamp(1040px,88vw,1280px);
+
+      /* Backgrounds: local images first; Unsplash fallback if absent */
+      --hero-mountain:url('main1.jpg'),
+        url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1600&auto=format&fit=crop');
+      --about-mountain:url('main2.jpg'),
+        url('https://images.unsplash.com/photo-1500048993953-d23a436266cf?q=80&w=1600&auto=format&fit=crop');
+    }
+
+    /* =========================================================
+       1) Base / Resets / Helpers
+       ========================================================= */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      color:var(--ink);
+      background: radial-gradient(1400px 900px at 70% -10%, #15202b 0%, #0b0d0f 60%) fixed no-repeat, #0b0d0f;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      line-height:1.55;
+    }
+    img{display:block;max-width:100%}
+    a{color:inherit;text-decoration:none}
+    p{margin:0 0 1.05rem}
+    h1,h2,h3,h4{margin:0 0 .6rem;line-height:1.1;font-family:"Plus Jakarta Sans",Inter,sans-serif;font-weight:800}
+    small,.muted{color:var(--muted)}
+    .wrap{width:var(--wrap);margin-inline:auto;padding-inline:18px}
+
+    /* UI primitives */
+    .pill{
+      display:inline-flex;align-items:center;gap:.55rem;
+      padding:.5rem .85rem;border-radius:999px;
+      background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--muted);
+      backdrop-filter:blur(6px)
+    }
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:.55rem;
+      padding:.95rem 1.25rem;border-radius:999px;border:0;cursor:pointer;
+      font-weight:800;letter-spacing:.2px;color:#08140c;
+      background:linear-gradient(180deg,var(--brand),var(--brand-600));
+      box-shadow:0 20px 44px rgba(74,209,111,.28),0 1px 0 rgba(255,255,255,.12) inset;
+      transition:transform .14s ease, filter .18s ease;
+    }
+    .btn:hover{transform:translateY(-2px);filter:saturate(1.08)}
+    .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+    .card{background:linear-gradient(180deg,#14191f,#0f1216);border:1px solid var(--line);border-radius:var(--radius-xxl);box-shadow:var(--shadow-1);overflow:hidden}
+    section{padding:78px 0}
+    .kicker{display:inline-block;text-transform:uppercase;letter-spacing:.28em;color:var(--accent);font-weight:800;font-size:.78rem;margin-bottom:.6rem}
+
+    /* =========================================================
+       2) Header & 5-item Navigation (stable)
+       ========================================================= */
+    header{
+      position:sticky; top:0; z-index:40;
+      background:rgba(8,10,12,.58);
+      border-bottom:1px solid rgba(255,255,255,.06);
+      backdrop-filter:blur(10px);
+    }
+    .bar{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:16px; min-height:72px; padding:8px 0;
+    }
+    .brand{display:flex;align-items:center;gap:.7rem;font-weight:900;letter-spacing:.3px}
+    .badge{
+      width:36px;height:36px;border-radius:10px;display:grid;place-items:center;
+      background:radial-gradient(100% 100% at 30% 20%,#a0f3bd,#2fa957);color:#07120a;font-weight:900;
+      box-shadow:0 8px 24px rgba(74,209,111,.35);outline:2px solid rgba(255,255,255,.12)
+    }
+    /* 5-item centered menu on desktop */
+    .menu{flex:1 1 auto; display:flex; justify-content:center}
+    .menu ul{list-style:none; display:flex; gap:14px; margin:0; padding:0}
+    .menu a{
+      display:inline-flex; align-items:center; padding:.55rem .9rem;
+      border-radius:999px; border:1px solid var(--line);
+      color:var(--muted); background:rgba(255,255,255,.05); white-space:nowrap;
+    }
+    .cta{display:flex; gap:10px; flex:0 0 auto}
+    .hamburger{
+      display:none; border:1px solid var(--line); background:rgba(255,255,255,.06);
+      color:var(--ink); padding:.55rem .8rem; border-radius:999px; cursor:pointer
+    }
+    /* Tablet/Mobile */
+    @media (max-width:1024px){
+      .menu{position:absolute; left:0; right:0; top:100%; display:none}
+      header.open .menu{display:block}
+      .menu ul{
+        flex-direction:column; gap:8px; padding:10px 18px 14px;
+        background:rgba(10,12,14,.9); border-bottom:1px solid rgba(255,255,255,.06);
+        backdrop-filter:blur(8px)
+      }
+      .cta{display:none}
+      .hamburger{display:inline-flex}
+    }
+
+    /* =========================================================
+       3) HERO — cinematic background + two-photo showcase
+       ========================================================= */
+    .hero{padding:0;overflow:hidden;border-bottom:1px solid var(--line)}
+    .hero-viewport{
+      position:relative;min-height:72vh;display:grid;place-items:stretch;
+      background:radial-gradient(1200px 700px at 80% -10%,rgba(47,169,87,.16),transparent 60%) no-repeat,
+                 var(--hero-mountain) center/cover no-repeat;
+    }
+    .hero-overlay{position:absolute;inset:0;background:linear-gradient(120deg,rgba(8,11,13,.86),rgba(8,11,13,.45) 46%,rgba(8,11,13,.86))}
+    .hero-grid{position:relative;z-index:2;display:grid;grid-template-columns:1.15fr .85fr;gap:22px;align-items:end;padding:56px 0 40px}
+    .hero-copy h1{font-size:clamp(36px,5vw,62px);text-transform:uppercase;letter-spacing:.6px;margin-bottom:.4rem}
+    .hero-copy p{color:var(--muted);max-width:60ch}
+    .hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}
+    .duo{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px;border-radius:var(--radius-xxl);border:1px solid rgba(255,255,255,.12);box-shadow:var(--shadow-2);background:linear-gradient(180deg,rgba(12,16,20,.75),rgba(12,16,20,.9))}
+    .duo figure{margin:0;border-radius:22px;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.1);background:#0f1317}
+    .duo img{width:100%;height:260px;object-fit:cover;filter:saturate(1.03) contrast(1.02);transition:transform .35s ease}
+    .duo figure:hover img{transform:scale(1.04)}
+    .duo figcaption{position:absolute;left:12px;bottom:10px;background:rgba(7,10,12,.55);border:1px solid rgba(255,255,255,.12);color:#eafff0;padding:.3rem .6rem;border-radius:999px;font-size:.82rem}
+
+    /* =========================================================
+       4) ABOUT — company narrative with mountain panel
+       ========================================================= */
+    .about-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center}
+    .about-photo{min-height:360px;border-radius:var(--radius-xxl);overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow-1);background:linear-gradient(180deg,rgba(0,0,0,.18),rgba(0,0,0,.35)),var(--about-mountain) center/cover no-repeat}
+    .about p{color:var(--muted)}
+
+    /* =========================================================
+       5) LINES OF TRADE — three concise offerings
+       ========================================================= */
+    .lines{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .line{display:flex;flex-direction:column;gap:12px;min-height:260px;padding:22px;border-radius:var(--radius-xxl);background:linear-gradient(180deg,#14191f,#101317);border:1px solid var(--line);box-shadow:var(--shadow-2)}
+    .line .icon{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;background:radial-gradient(100% 100% at 30% 20%,#bff7cf,#2fa957);color:#0a2012;font-weight:900;outline:2px solid rgba(255,255,255,.12);box-shadow:0 12px 26px rgba(74,209,111,.38)}
+    .line p{color:var(--muted)}
+
+    /* =========================================================
+       6) WHY US — benefits trio with summary card
+       ========================================================= */
+    .benefits{display:grid;grid-template-columns:1.2fr .8fr;gap:20px;align-items:stretch}
+    .benefit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .benefit{padding:18px;border-radius:var(--radius-lg);border:1px solid var(--line);background:#0f1317;box-shadow:var(--shadow-2)}
+    .benefit h4{margin-bottom:.25rem}
+    .benefit p{color:var(--muted)}
+
+    /* =========================================================
+       7) PROCESS — three-step timeline
+       ========================================================= */
+    .process{display:grid;grid-template-columns:.9fr 1.1fr;gap:24px;align-items:center}
+    .steps{display:flex;flex-direction:column;gap:12px;counter-reset:step}
+    .step{display:grid;grid-template-columns:68px 1fr;gap:14px;align-items:start;padding:18px;border-radius:16px;border:1px solid var(--line);background:#14191f}
+    .num{width:68px;height:68px;border-radius:14px;background:#0d1115;border:1px solid #20252b;display:grid;place-items:center;color:#c9f5d7;font-weight:900;position:relative;box-shadow:var(--shadow-2)}
+    .num::after{content:counter(step,decimal-leading-zero);counter-increment:step;position:absolute;inset:0;display:grid;place-items:center;font-family:"Plus Jakarta Sans",Inter,sans-serif;font-size:1.05rem;letter-spacing:.4px}
+    .step p{color:var(--muted)}
+
+    /* =========================================================
+       8) COMPLIANCE — quick badges
+       ========================================================= */
+    .compliance{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    .badge-card{padding:18px;border:1px dashed #2a3138;border-radius:16px;background:#0e1216;display:flex;flex-direction:column;gap:8px}
+    .badge-title{font-weight:800}
+    .badge-desc{color:var(--muted);font-size:.92rem}
+
+    /* =========================================================
+       9) CONTACT / RFQ — email-only, no phone inputs
+       ========================================================= */
+    .contact{display:grid;grid-template-columns:1.1fr .9fr;gap:22px}
+    form{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:22px;border-radius:var(--radius-xxl);background:linear-gradient(180deg,#151a21,#11151a);border:1px solid var(--line);box-shadow:var(--shadow-1)}
+    label{font-size:.86rem;color:#d4d9df}
+    input,select,textarea{width:100%;padding:14px 14px;color:var(--ink);background:#0b0f13;border:1px solid #232931;border-radius:12px;outline:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.06);transition:border .2s ease,box-shadow .2s ease}
+    input:focus,select:focus,textarea:focus{border-color:#3a424b;box-shadow:0 0 0 3px rgba(74,209,111,.25)}
+    .full{grid-column:1 / -1}
+    .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:6px}
+    .note{padding:16px;border-radius:16px;border:1px dashed #293038;color:var(--muted)}
+
+    /* =========================================================
+       10) TOAST — success notification
+       ========================================================= */
+    .toast{position:fixed;right:22px;bottom:22px;z-index:120;display:none;min-width:320px;max-width:440px;padding:16px 16px 14px;border-radius:16px;border:1px solid #1f2a22;background:linear-gradient(180deg,#0f1b12,#0a140d);box-shadow:0 20px 44px rgba(0,0,0,.46)}
+    .toast.show{display:flex;gap:12px;align-items:flex-start;animation:toastIn .25s ease-out}
+    .toast .i{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:radial-gradient(100% 100% at 30% 20%,#a0f3bd,#2fa957);color:#051a0c;font-weight:900;box-shadow:0 12px 26px rgba(74,209,111,.38);outline:2px solid rgba(255,255,255,.12);flex:0 0 40px}
+    .toast strong{display:block;margin-top:2px}
+    .toast .close{margin-left:auto;background:transparent;border:1px solid #24402c;border-radius:999px;color:#bfeecf;padding:.25rem .6rem;cursor:pointer}
+    @keyframes toastIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+    /* =========================================================
+       11) Footer
+       ========================================================= */
+    footer{padding:44px 0 80px;color:var(--muted);border-top:1px solid var(--line);background:linear-gradient(180deg,#0a0d10,#080a0c)}
+    .foot{display:grid;grid-template-columns:1.2fr .8fr;gap:22px;align-items:start}
+    .address{padding:18px;border:1px solid var(--line);border-radius:16px;background:#0c1014}
+
+    /* =========================================================
+       12) Responsive layout tweaks
+       ========================================================= */
+    @media (max-width:1120px){
+      .hero-grid,.about-grid,.benefits,.process,.contact{grid-template-columns:1fr}
+      .lines{grid-template-columns:1fr 1fr}
+      .benefit-grid{grid-template-columns:1fr 1fr 1fr}
+      .compliance{grid-template-columns:1fr 1fr 1fr 1fr}
+    }
+    @media (max-width:760px){
+      .lines{grid-template-columns:1fr}
+      .benefit-grid{grid-template-columns:1fr}
+      .compliance{grid-template-columns:1fr 1fr}
+      .duo img{height:220px}
+      form{grid-template-columns:1fr}
+      .actions{justify-content:stretch}
+    }
+  </style>
+</head>
+<body>
+  <!-- =========================================================
+       HEADER — 5-item menu (About · Lines · Why Us · Process · RFQ)
+       ========================================================= -->
+  <header>
+    <div class="wrap bar">
+      <a class="brand" href="#top" aria-label="LONG GRASS TRADING LLC">
+        <div class="badge">LG</div><span>LONG GRASS TRADING LLC</span>
+      </a>
+
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">Menu ▾</button>
+
+      <nav class="menu" id="mainMenu" aria-label="Primary">
+        <ul>
+          <li><a href="#about">About</a></li>
+          <li><a href="#lines">Lines of Trade</a></li>
+          <li><a href="#benefits">Why Us</a></li>
+          <li><a href="#process">Process</a></li>
+          <li><a href="#contact">RFQ</a></li>
+        </ul>
+      </nav>
+
+      <div class="cta">
+        <a class="btn" href="#contact">Send Request </a>
+        <a class="btn ghost" href="#lines">Browse Lines</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       HERO — Cinematic mountain + two-photo highlight
+       ========================================================= -->
+  <section id="top" class="hero" aria-label="Hero">
+    <div class="hero-viewport">
+      <div class="hero-overlay"></div>
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <span class="kicker">Wholesale · Nondurable Goods</span>
+          <h1>RELIABLE SUPPLY<br/>THAT MOVES</h1>
+          <p>
+            LONG GRASS TRADING LLC connects regional distributors and retail groups with fast-moving
+            nondurable goods. We source responsibly, move quickly, and keep inventory visible across
+            the chain so shelves stay full and forecasts hold.
+          </p>
+          <div class="hero-actions">
+            <a class="btn" href="#contact">Start an RFQ</a>
+            <a class="btn ghost" href="#about">How we operate</a>
+          </div>
+        </div>
+
+        <!-- Two elegant images instead of a multi-card carousel -->
+        <aside class="duo" aria-label="Highlights">
+          <figure>
+            <img alt="Mountain trail at sunrise — reliable routes" src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop">
+            <figcaption>Reliable routes</figcaption>
+          </figure>
+          <figure>
+            <img alt="Alpine lake reflection — clear paperwork" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop">
+            <figcaption>Clear paperwork</figcaption>
+          </figure>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       ABOUT — Company overview
+       ========================================================= -->
+  <section id="about" class="about">
+    <div class="wrap about-grid">
+      <div class="about-photo" aria-label="Mountain landscape panel for About"></div>
+      <div>
+        <span class="kicker">Company Overview</span>
+        <h2>Wholesale built for clarity and speed.</h2>
+        <p>
+          We operate as a nondurable goods merchant wholesaler with an emphasis on short lead
+          times, transparent documentation, and dependable replenishment cycles. Our partners
+          include regional distributors, grocery groups, independent chains, and e-commerce
+          operators that require reliable flow without single-brand dependency.
+        </p>
+        <p>
+          Stock positions and transit ETAs are updated daily based on carrier scans and hub
+          feedback. Every item we move ships with a digital pack that includes lot codes,
+          safety data/spec sheets, country-of-origin records, and carton dimensions for
+          receiving teams.
+        </p>
+        <p>
+          From Port Saint Lucie we serve the Southeast and beyond using cross-dock partners.
+          We keep the conversation simple: confirm need, verify compliance, ship clean,
+          and close with a short after-action file.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       LINES OF TRADE — Three concise offerings
+       ========================================================= -->
+  <section id="lines" class="tight">
+    <div class="wrap">
+      <span class="kicker">What We Move</span>
+      <h2>Nondurable goods lines with predictable turns</h2>
+      <p class="muted" style="max-width:70ch">
+        We concentrate on high-velocity goods. Each line includes supply depth, substitution
+        options, and documentation templates to simplify onboarding.
+      </p>
+
+      <div class="lines" style="margin-top:18px">
+        <article class="line">
+          <div class="icon">PF</div>
+          <h3>Pantry &amp; Packaged Foods</h3>
+          <p>
+            Shelf-stable items with conservative dating and consistent case packs. Private-label
+            capable where required. We flag allergens and provide bilingual packaging scans.
+          </p>
+          <p class="muted">Deliverables: spec sheets, allergen matrix, pallet patterns, replenishment cadence.</p>
+        </article>
+
+        <article class="line">
+          <div class="icon">PC</div>
+          <h3>Personal Care Basics</h3>
+          <p>
+            Everyday care SKUs vetted for labeling compliance and ingredient disclosures. Program
+            includes sampling for store trials and packaging resilience tests.
+          </p>
+          <p class="muted">Deliverables: compliance attestations, SDS links, shelf-fit notes.</p>
+        </article>
+
+        <article class="line">
+          <div class="icon">HS</div>
+          <h3>Household &amp; Cleaning</h3>
+          <p>
+            Concentrates and ready-to-use formats with clear handling instructions. Case counts align
+            with planogram realities to prevent backroom buildup and reduce partials.
+          </p>
+          <p class="muted">Deliverables: dilution charts, hazard codes, case-to-shelf mapping.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       WHY US — Benefits
+       ========================================================= -->
+  <section id="benefits">
+    <div class="wrap benefits">
+      <div class="card" style="padding:24px;display:flex;flex-direction:column;justify-content:center">
+        <span class="kicker">Why Distributors Stay</span>
+        <h2>Operational honesty, measured outcomes.</h2>
+        <p class="muted" style="max-width:65ch">
+          We structure every engagement around fill rate, on-time performance, and documented issue
+          closure. The point is simple: fewer surprises, faster turns, cleaner paperwork.
+        </p>
+        <div style="margin-top:14px">
+          <a class="btn" href="#process">See our flow</a>
+        </div>
+      </div>
+
+      <div class="benefit-grid">
+        <div class="benefit">
+          <h4>Inventory Visibility</h4>
+          <p>Daily tallies and ETA notes you can import into your systems without reformatting.</p>
+        </div>
+        <div class="benefit">
+          <h4>Swap-Ready Catalog</h4>
+          <p>Equivalent SKUs with side-by-side specs to keep promos live even when brands rotate.</p>
+        </div>
+        <div class="benefit">
+          <h4>Paperwork That Travels</h4>
+          <p>Lot codes, SDS/specs, and COOs bundled with ASN-style summaries for quick receiving.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       PROCESS — Three sprints
+       ========================================================= -->
+  <section id="process" class="tight">
+    <div class="wrap process">
+      <div>
+        <span class="kicker">How We Work</span>
+        <h2>From purchase order to clean delivery — in three sprints</h2>
+        <p class="muted" style="max-width:68ch">
+          We keep the path short and the handoffs clear. Each sprint ends with a mini report:
+          what shipped, what blocked, and what we adjusted.
+        </p>
+        <div class="note" style="margin-top:14px">
+          <strong>Cadence:</strong> Sprint A (Intake &amp; spec lock), Sprint B (Pick, pack &amp; docs),
+          Sprint C (Dispatch &amp; closeout). Remote-first with cross-dock checks when needed.
+        </div>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="num" aria-hidden="true"></div>
+          <div>
+            <strong>Sprint A — Intake &amp; Confirmation</strong>
+            <p>
+              Confirm SKUs, substitutes, pack sizes, and dating tolerances. We pin documentation
+              and create carton/pallet maps so receiving teams know what to expect.
+            </p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="num" aria-hidden="true"></div>
+          <div>
+            <strong>Sprint B — Pick, Pack &amp; Compliance Docs</strong>
+            <p>
+              Product is staged with labels and ASN summaries. SDS/specs and COOs ride with the
+              shipment digitally; physical packs are sealed in the lead carton of each pallet.
+            </p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="num" aria-hidden="true"></div>
+          <div>
+            <strong>Sprint C — Dispatch, Track &amp; Close</strong>
+            <p>
+              We issue dispatch notes with live ETAs, monitor hub scans, and provide a closeout file
+              that reconciles what shipped vs. what invoiced — reducing month-end friction.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       COMPLIANCE — Small grid of standards
+       ========================================================= -->
+  <section id="compliance">
+    <div class="wrap">
+      <span class="kicker">Standards &amp; Documentation</span>
+      <h2>Compliance that travels with every case</h2>
+      <p class="muted" style="max-width:70ch">
+        We centralize documents and version them as products evolve. Your teams access the same
+        source of truth we use at the dock door.
+      </p>
+
+      <div class="compliance" style="margin-top:16px">
+        <div class="badge-card">
+          <span class="badge-title">Traceability</span>
+          <span class="badge-desc">Lot codes and batch records tracked by pallet and by case; shared in the digital shipment pack.</span>
+        </div>
+        <div class="badge-card">
+          <span class="badge-title">SDS &amp; Specs</span>
+          <span class="badge-desc">Safety data and technical spec sheets linked by SKU and aligned with current labeling.</span>
+        </div>
+        <div class="badge-card">
+          <span class="badge-title">Country of Origin</span>
+          <span class="badge-desc">COO statements maintained per line with certificate copies embedded in the pack.</span>
+        </div>
+        <div class="badge-card">
+          <span class="badge-title">Label Compliance</span>
+          <span class="badge-desc">Ingredient panels and warnings reviewed for the region; bilingual scans where available.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       CONTACT / RFQ — Email-only form + success toast
+       ========================================================= -->
+  <section id="contact">
+    <div class="wrap contact">
+      <!-- RFQ info -->
+      <div class="card" style="padding:24px;display:flex;flex-direction:column;justify-content:center">
+        <span class="kicker">Start an RFQ</span>
+        <h2>Tell us your demand profile.</h2>
+        <p class="muted" style="max-width:70ch">
+          Share categories, volumes, dating tolerances, and the delivery window you need to hit.
+          We’ll reply from <strong>oneil@longgrasstrading.org</strong> with availability and
+          substitution paths. We do not require any alternative contact channels.
+        </p>
+        <ul style="margin:14px 0 0 1.1rem;color:var(--muted)">
+          <li>Category focus and weekly/seasonal cadence</li>
+          <li>Pack sizes and any private-label requirements</li>
+          <li>Receiving constraints and documentation expectations</li>
+        </ul>
+      </div>
+
+      <!-- Form (no phone inputs) -->
+      <form id="rfq" action="#" method="post" aria-label="Request for Quote form">
+        <div class="full">
+          <label for="company">Company / Organization</label>
+          <input id="company" name="company" placeholder="Ex: Atlantic Regional Distribution" required />
+        </div>
+
+        <div>
+          <label for="fname">First Name</label>
+          <input id="fname" name="fname" placeholder="First name" required />
+        </div>
+
+        <div>
+          <label for="lname">Last Name</label>
+          <input id="lname" name="lname" placeholder="Last name" required />
+        </div>
+
+        <div class="full">
+          <label for="email">Work Email</label>
+          <input id="email" name="email" type="email" placeholder="you@company.com" required />
+        </div>
+
+        <div>
+          <label for="city">City / State</label>
+          <input id="city" name="city" placeholder="Port Saint Lucie, FL" />
+        </div>
+
+        <div>
+          <label for="line">Primary Line of Interest</label>
+          <select id="line" name="line">
+            <option>Pantry &amp; Packaged Foods</option>
+            <option>Personal Care Basics</option>
+            <option>Household &amp; Cleaning</option>
+            <option>General nondurable goods</option>
+          </select>
+        </div>
+
+        <div class="full">
+          <label for="message">Outline your demand</label>
+          <textarea id="message" name="message" rows="5" placeholder="Volumes, pack sizes, target dates, substitutes, labeling or SDS needs..."></textarea>
+        </div>
+
+        <div class="actions full">
+          <button class="btn" type="submit">Send RFQ</button>
+          <button class="btn ghost" type="reset">Clear</button>
+        </div>
+
+        <div class="full note">
+          <strong>Privacy:</strong> We use your data only to respond to this RFQ via the corporate
+          email you provide. No newsletters, no resale, no other contact channels required.
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       FOOTER — Business identity & address
+       ========================================================= -->
+  <footer>
+    <div class="wrap foot">
+      <div>
+        <div class="brand"><div class="badge">LG</div><span>LONG GRASS TRADING LLC</span></div>
+        <p style="margin-top:.6rem">
+          Wholesale trade in nondurable goods — reliable flow, clear paperwork, and honest lead times.
+        </p>
+      </div>
+
+      <div class="address" aria-label="Registered business contact">
+        <strong>Contacts</strong>
+        <p style="margin-top:.4rem">
+          3731 SW Darby Ln<br/>
+          Port Saint Lucie, FL 34953<br/>
+          United States
+        </p>
+        <p style="margin-top:.6rem">
+          Email: <a href="mailto:oneil@longgrasstrading.org">oneil@longgrasstrading.org</a>
+        </p>
+      </div>
+    </div>
+    <div class="wrap" style="margin-top:28px">
+      <small>© <span id="y"></span> LONG GRASS TRADING LLC. All rights reserved.</small>
+    </div>
+  </footer>
+
+  <!-- =========================================================
+       TOAST (success)
+       ========================================================= -->
+  <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true">
+    <div class="i" aria-hidden="true">🚚</div>
+    <div>
+      <strong>RFQ sent</strong>
+      <p class="muted" style="margin:.25rem 0 0">
+        We’ll reply from <b>oneil@longgrasstrading.org</b> with availability and next steps.
+      </p>
+    </div>
+    <button class="close" type="button" id="toastClose">Close</button>
+  </div>
+
+  <!-- =========================================================
+       Minimal JS — year stamp, mobile menu toggle, toast
+       ========================================================= -->
+  <script>
+    // Footer year
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // Mobile menu toggle
+    const headerEl = document.querySelector('header');
+    const burger = document.getElementById('hamburger');
+    burger.addEventListener('click', ()=> headerEl.classList.toggle('open'));
+
+    // Toast behavior
+    const toast = document.getElementById('toast');
+    const toastClose = document.getElementById('toastClose');
+    function openToast(){ toast.classList.add('show'); toastClose.focus(); setTimeout(()=>toast.classList.remove('show'), 5000); }
+    toastClose.addEventListener('click', ()=> toast.classList.remove('show'));
+
+    // Intercept RFQ submit (demo)
+    const rfqForm = document.getElementById('rfq');
+    rfqForm.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      rfqForm.reset();
+      openToast();
+    });
+  </script>
+</body>
+</html>
